@@ -1,0 +1,28 @@
+services:
+
+  web:
+    image: python:3.10-slim
+    container_name: demo_web
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["python", "app.py"]
+    ports:
+      - "8000:8000"
+    networks:
+      - app_net
+
+  redis:
+    image: redis:7
+    container_name: redis
+    volumes:
+      - redis_log:/var/log/redis
+    networks:
+      - app_net
+
+volumes:
+  redis_log:
+
+networks:
+  app_net:
+    driver: bridge
