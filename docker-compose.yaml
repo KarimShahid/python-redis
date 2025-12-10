@@ -10,9 +10,16 @@ services:
       sh -c "pip install -r requirements.txt && python app.py"
     ports:
       - "8000:8000"
+    environment:
+      # Postgres connection info passed into the web container
+      DB_HOST: db
+      DB_PORT: 5432
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword    
     networks:
       - app_net
-
+      
   redis:
     image: redis:7
     container_name: redis
@@ -20,9 +27,24 @@ services:
       - redis_log:/var/log/redis
     networks:
       - app_net
+      
+  db:
+    image: postgres:16.11-alpine3.23 # Specifies the PostgreSQL image and version to use
+    container_name: my_postgres_db # Assigns a custom name to the container
+    environment:
+      POSTGRES_DB: mydatabase # Sets the default database name
+      POSTGRES_USER: myuser # Sets the default user
+      POSTGRES_PASSWORD: mypassword # Sets the password for the default user
+    ports:
+      - "5432:5432" # Maps host port 5432 to container port 5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data # Persists data to a named volume
+    networks:
+      - app_net 
 
 volumes:
   redis_log:
+  postgres_data:
 
 networks:
   app_net:
